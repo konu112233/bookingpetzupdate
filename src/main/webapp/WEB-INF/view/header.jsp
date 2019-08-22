@@ -7,7 +7,77 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="516509412079-6fsar0qakm09etrg44upoik5b2sffeet.apps.googleusercontent.com">
+    
+    <script src="https://apis.google.com/js/api:client.js"></script>
+     
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    
+    <script src="https://cdn.rawgit.com/oauth-io/oauth-js/c5af4519/dist/oauth.js"></script>
+    
+    <script>
+        var googleUser = {};
+        var startSigninApp = function() {
+        gapi.load('auth2', function(){
+            // Retrieve the singleton for the GoogleAuth library and set up the client.
+        auth2 = gapi.auth2.init({
+        client_id: '516509412079-6fsar0qakm09etrg44upoik5b2sffeet.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
+        // Request scopes in addition to 'profile' and 'email'
+        //scope: 'additional_scope'
+        });
+        attachSignin(document.getElementById('customSignin'));
+        });
+        };
 
+        function attachSignin(element) {
+        console.log(element.id);
+        auth2.attachClickHandler(element, {},
+        function(googleUser) {
+        var googleemail=googleUser.getBasicProfile().getEmail();
+         $.ajax({
+                    type:"POST",
+                    url:"http://localhost:8009/BookingPetz/sociallogin",
+                            data:"email="+googleemail+"",
+                    success:function(data){
+                                
+                    $("#ajaxResponsegoogle").html(data);
+                    }
+                    });  
+                    });
+                }
+  
+                var startSignupApp = function() {
+                gapi.load('auth2', function(){
+      // Retrieve the singleton for the GoogleAuth library and set up the client.
+                auth2 = gapi.auth2.init({
+                client_id: '516509412079-6fsar0qakm09etrg44upoik5b2sffeet.apps.googleusercontent.com',
+                cookiepolicy: 'single_host_origin',
+        // Request scopes in addition to 'profile' and 'email'
+        //scope: 'additional_scope'
+                });
+                attachSignup(document.getElementById('customSignup'));
+                });
+                };
+
+                function attachSignup(element) {
+                console.log(element.id);
+                auth2.attachClickHandler(element, {},
+                function(googleUser) {          
+                document.getElementById('signupname').value = googleUser.getBasicProfile().getGivenName();
+                document.getElementById('signupsurname').value = googleUser.getBasicProfile().getFamilyName();
+                document.getElementById('email').value = googleUser.getBasicProfile().getEmail();
+                document.getElementById('picurl').value = encodeURIComponent(googleUser.getBasicProfile().getImageUrl());
+          //    googleUser.getBasicProfile().getName()+"&nbsp;&nbsp;<img src='"+googleUser.getBasicProfile().getImageUrl()+"'><br>id : "+googleUser.getBasicProfile().getId()+"<br> email : "+googleUser.getBasicProfile().getEmail()+"<br> First Name : "+googleUser.getBasicProfile().getGivenName()+"<br> Last Name : "+googleUser.getBasicProfile().getFamilyName()+"";
+                });
+                }
+  
+  </script>
+                   
+    
+  <div id="ajaxResponsegoogle"></div>
+  
 <jsp:include page="signinModal.jsp"></jsp:include>
 <jsp:include page="signupModal.jsp"></jsp:include>
 <jsp:include page="signupEmail.jsp"></jsp:include>
